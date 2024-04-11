@@ -1,0 +1,57 @@
+.image {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.icon {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.image:hover {
+  transform: scale(1.05);
+}
+
+.user-card {
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.item-title,.item-subtitle {
+  margin-bottom: 5px;
+  font-family: "Mitr", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 20px;
+  padding-right: 10px;
+}
+
+.head {
+  font-family: "Karla", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  text-align: center;
+  background-color: #f0f0f0;
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+  flex: 1;
+}
+
+.head h1 {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}

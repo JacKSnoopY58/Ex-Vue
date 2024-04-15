@@ -44,6 +44,8 @@ export default {
                 Cookies.set('token', data.token);
                 if(data.role === 'admin'){
                     this.$router.push('/Apicon');
+                }else {
+                    this.$router.push('/apiconemp');
                 }
                 
             } catch (error) {

@@ -5,9 +5,7 @@
         <v-row>
             <v-col cols="3" v-for="(item, index) in apidata" :key="index">
                 <v-img :src="item.img" height="300" />
-                <v-img
-                    :src="'http://localhost:3000/images/' + item.Image"
-                    height="250" width="250"></v-img>
+                <v-img :src="'http://localhost:3000/images/' + item.Image" height="250" width="250"></v-img>
                 <v-card-title primary-title>
                     {{ item.Pname }}
                 </v-card-title>
@@ -28,7 +26,7 @@
                 </v-card-title>
                 <v-col cols="6">
 
-                    <input type="file" @change="handleFileUpload">
+                    <input type="file" ref="fileInput" @change="handleFileUpload">  
 
                     <!-- <img :src="postdata.image" style="max-width: 100%; max-height: 200px;"> -->
 
@@ -152,25 +150,23 @@ export default {
                 console.log(this.postdata._id);
                 console.log()
                 try {
-                    const { data } = await this.axios.put(
+
+                    const response = await this.axios.put(
                         'http://localhost:3000/api/v1/product/' + this.postdata._id,
-                        {
-                            Pname: this.postdata.Pname,
-                            price: this.postdata.price,
-                            stock: this.postdata.stock,
-                            Image: this.postdata.image,
-                        },
+                        this.postdata,
                         {
                             headers: {
+                                'Content-Type': 'multipart/form-data',
                                 Authorization: `Bearer ${this.token}`
                             }
                         }
                     );
-                    console.log(data);
+                    console.log(response.data);
                     this.getData();
+                    this.postdata = { ...this.postdata2 }
                     this.dialogedit = false;
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 }
 
             } else {
@@ -179,16 +175,17 @@ export default {
 
                     const { data } = await this.axios.post(
                         'http://localhost:3000/api/v1/product',
-                        this.postdata, 
+                        this.postdata,
                         {
                             headers: {
-                                'Content-Type': 'multipart/form-data', 
+                                'Content-Type': 'multipart/form-data',
                                 Authorization: `Bearer ${this.token}`
                             }
                         }
                     );
                     console.log(data);
                     this.getData();
+                    this.postdata = { ...this.postdata2 }
                     this.dialogedit = false;
                 } catch (error) {
                     console.log(error);
@@ -214,6 +211,8 @@ export default {
             }
         },
         toggleName() {
+            this.$refs.fileInput.value = '';
+            this.postdata = { ...this.postdata2 };  
             this.dialogedit = !this.dialogedit;
         },
 

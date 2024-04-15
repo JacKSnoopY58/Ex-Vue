@@ -68,6 +68,12 @@ const routes = [
       component: () => import('../views/AboutView.vue')
     },
     {
+      path: '/cartemp',
+      name: 'cartemp',
+
+      component: () => import('../views/Cartemp.vue')
+    },
+    {
       path: '/simple',
       name: 'simple',
 

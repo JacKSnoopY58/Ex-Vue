@@ -6,7 +6,7 @@
             <v-col cols="3" v-for="(item, index) in apidata" :key="index">
                 <v-img :src="item.img" height="300" />
                 <v-img
-                    :src="'http://localhost:3000/images/' + item.Image"
+                    src="http://www.the-sun.com/wp-content/uploads/sites/6/2023/10/www-instagram-com-monkeycatluna-hl-851711797.jpg"
                     height="250" width="250"></v-img>
                 <v-card-title primary-title>
                     {{ item.Pname }}
@@ -27,15 +27,12 @@
                     {{ savemode }}
                 </v-card-title>
                 <v-col cols="6">
-
-                    <input type="file" @change="handleFileUpload">
-
-                    <!-- <img :src="postdata.image" style="max-width: 100%; max-height: 200px;"> -->
-
                     <v-text-field name="Productname" label="Productname" id="Productname" v-model="postdata.Pname">
                     </v-text-field>
+
                     <v-text-field name="Productprice" label="Productprice" id="price" v-model="postdata.price">
                     </v-text-field>
+
                     <v-text-field name="Productstock" label="Productstock" id="stock" v-model="postdata.stock">
                     </v-text-field>
                 </v-col>
@@ -82,14 +79,12 @@ export default {
                 _id: '',
                 Pname: '',
                 price: '',
-                stock: '',
-                image: null
+                stock: ''
             },
             postdata2: {
                 Pname: '',
                 price: '',
-                stock: '',
-                image: null
+                stock: ''
             },
         };
     },
@@ -103,13 +98,7 @@ export default {
     },
     methods: {
 
-        handleFileUpload(event) {
 
-            const file = event.target.files[0];
-            if (file) {
-                this.postdata.image = file;
-            }
-        },
         getData() {
             console.log(this.token)
             this.axios.get('http://localhost:3000/api/v1/product', {
@@ -150,15 +139,13 @@ export default {
             if (this.id !== '') {
                 alert('update');
                 console.log(this.postdata._id);
-                console.log()
                 try {
                     const { data } = await this.axios.put(
                         'http://localhost:3000/api/v1/product/' + this.postdata._id,
                         {
                             Pname: this.postdata.Pname,
                             price: this.postdata.price,
-                            stock: this.postdata.stock,
-                            Image: this.postdata.image,
+                            stock: this.postdata.stock
                         },
                         {
                             headers: {
@@ -172,17 +159,19 @@ export default {
                 } catch (error) {
                     console.log(error);
                 }
-
+                
             } else {
                 alert('new item');
                 try {
-
                     const { data } = await this.axios.post(
                         'http://localhost:3000/api/v1/product',
-                        this.postdata, 
+                        {
+                            Pname: this.postdata.Pname,
+                            price: this.postdata.price,
+                            stock: this.postdata.stock
+                        },
                         {
                             headers: {
-                                'Content-Type': 'multipart/form-data', 
                                 Authorization: `Bearer ${this.token}`
                             }
                         }

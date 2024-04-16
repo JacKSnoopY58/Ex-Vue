@@ -4,27 +4,32 @@
 
         <v-row>
             <v-col cols="3" v-for="(item, index) in apidata" :key="index">
+                <v-img :src="item.img" height="300" />
                 <v-img :src="'http://localhost:3000/images/' + item.Image" height="250" width="250"></v-img>
                 <v-card-title primary-title>
-                   ProductName:  {{ item.Pname }} <br>
-                   Stock: {{ item.stock }}
+                    {{ item.Pname }}
                 </v-card-title>
-                <div>
-                    <v-btn icon @click="decrementQuantity(index)">
+                <!-- <div>
+                    <v-btn icon @click="decrementQuantity">
                         <v-icon>mdi-minus</v-icon>
                     </v-btn>
-                    <span>{{ quantities[index] }}</span>
-                    <v-btn icon @click="incrementQuantity(index)">
+                    <span>{{ quantity }}</span>
+                    <v-btn icon @click="incrementQuantity">
                         <v-icon>mdi-plus</v-icon>
                     </v-btn>
-      
-                </div>
+                </div> -->
 
                 <v-card-actions>
-                    <v-btn color="green" @click="addProduct(item, index)">Add Product</v-btn>
+                    <!-- <v-btn color="green" @click="Addproduct(item)">Add Product</v-btn> -->
+
+                    <!-- <v-btn color="red" @click="deleteItem(item)">Delete</v-btn> -->
                 </v-card-actions>
+
+
             </v-col>
         </v-row>
+
+
     </div>
 </template>
 
@@ -36,7 +41,7 @@ export default {
         return {
             token: Cookies.get('token'),
             id: '',
-            quantities: [],
+            quantity: 1,
             apidata: [],
             // role: '',
             dialogedit: false,
@@ -65,19 +70,18 @@ export default {
         this.getData();
     },
     methods: {
-
-        incrementQuantity(index) {
-            this.$set(this.quantities, index, (this.quantities[index] || 0) + 1);
+        incrementQuantity() {
+            this.quantity++;
         },
-        decrementQuantity(index) {
-            if (this.quantities[index] && this.quantities[index] > 1) {
-                this.$set(this.quantities, index, this.quantities[index] - 1);
+        decrementQuantity() {
+            if (this.quantity > 1) {
+                this.quantity--;
             }
         },
 
         getData() {
             console.log(this.token)
-            this.axios.get('http://localhost:3000/api/v1/product', {
+            this.axios.get('http://localhost:3000/api/v1/orders', {
                 headers: {
                     Authorization: `Bearer ${this.token}`
                 }
@@ -90,16 +94,16 @@ export default {
                     console.error('Error fetching data:', error);
                 });
         },
-        async addProduct(item, index) {
-            const quantity = parseInt(this.quantities[index]);
-            console.log(item._id);
-            console.log(quantity)
+        async Addproduct(item) {
+            this.postdata = { ...item }; 
+            // console.log(this.quantity);
+            console.log(this.postdata);
             try {
                 const response = await this.axios.post(
                     'http://localhost:3000/api/v1/product/addcart',
                     {
-                        productId: item._id,
-                        Amount: quantity
+                        productId: this.postdata._id,
+                        Amount: this.quantity
                     },
                     {
                         headers: {
@@ -108,11 +112,14 @@ export default {
                         }
                     }
                 );
+
                 console.log(response.data);
                 this.getData();
-                this.$set(this.quantities, index, 0);
+
+                this.postdata = { ...this.postdata2 };
+                this.dialogedit = false; 
             } catch (error) {
-                console.error('Error adding product:', error);
+                console.error(error);
             }
         },
         closeItem(item) {

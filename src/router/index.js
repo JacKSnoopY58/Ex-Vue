@@ -50,6 +50,18 @@ const routes = [
 
       component: () => import('../views/score.vue')
     },
+    {
+      path: '/cart',
+      name: 'cart',
+
+      component: () => import('../views/Cart.vue')
+    },
+    {
+      path: '/order',
+      name: 'order',
+
+      component: () => import('../views/Order.vue')
+    },
   ]
   },
   {

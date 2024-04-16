@@ -2,20 +2,24 @@
     <div>
         <h1>Apicon Page</h1>
 
+
         <v-row>
             <v-col cols="3" v-for="(item, index) in apidata" :key="index">
-                <v-img :src="item.img" height="300" />
                 <v-img :src="'http://localhost:3000/images/' + item.Image" height="250" width="250"></v-img>
                 <v-card-title primary-title>
-                    {{ item.Pname }}
+                   ProductName:  {{ item.Pname }} <br>
+                   Stock: {{ item.stock }}
                 </v-card-title>
-                <v-card-actions>
+                <div>
                     <v-btn color="blue" @click="editItem(item)">Edit</v-btn>
 
                     <v-btn color="red" @click="deleteItem(item)">Delete</v-btn>
+      
+                </div>
+
+                <v-card-actions>
+                    <!-- <v-btn color="green" @click="addProduct(item, index)">Add Product</v-btn> -->
                 </v-card-actions>
-
-
             </v-col>
         </v-row>
 
@@ -48,18 +52,13 @@
                     Delete ID: {{ postdata._id }}
                 </v-card-title>
                 <v-col cols="6">
-                    <!-- <v-text-field name="Productname" label="Productname" id="Productname" v-model="postdata.Pname">
-                    </v-text-field> -->
-                    <!-- <v-card-title>
-                   Product Name: {{ postdata.Pname }}
-                </v-card-title> -->
                 </v-col>
                 <v-btn color="red" @click="deleteButton(postdata._id)">Confirm</v-btn>
                 <v-btn color="blue" @click="cancleDelete()">Cancel</v-btn>
             </v-card>
         </v-dialog>
 
-        <v-btn color="success" @click="getData2()">Call API</v-btn>
+        <!-- <v-btn color="success" @click="getData2()">Call API</v-btn> -->
         <v-btn color="success" @click="newItem()">Create</v-btn>
     </div>
 </template>

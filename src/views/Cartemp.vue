@@ -24,7 +24,11 @@
         <div class="slip-footer">
             <div>Total Bill Price: {{ getTotalBillPrice() }}</div>
             <v-btn color="green" @click="Confirm()">Confirm Payment</v-btn>
+            <br>
+            <v-btn color="red" @click="Delete()">Cancel</v-btn>
         </div>
+
+        
     </div>
 </template>
 
@@ -108,7 +112,6 @@ export default {
                         }
                     }
                 );
-
                 console.log(response.data);
                 this.getData();
 
@@ -161,6 +164,23 @@ export default {
                 
             }
         },
+        async Delete() {
+            try {
+                const response = await this.axios.delete(
+                    'http://localhost:3000/api/v1/deletecart',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.token}`
+                        }
+                    }
+                );
+                console.log(response.data);
+                this.$router.push('/apiconemp');
+            } catch (error) {
+                console.error(error);
+                
+            }
+        },
                 getTotalPrice(quantity, price) {
             return quantity * price;
         }, 
@@ -176,6 +196,7 @@ export default {
 </script>
 
 <style>
+
 .slip-container {
     max-width: 600px;
     /* Adjust as needed */
@@ -205,7 +226,13 @@ export default {
     line-height: 1.5;
     /* Increase line height */
 }
-
+.slip-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px; /* Adjust margin top as needed */
+}
 .delete-btn {
     justify-content: center;
 }

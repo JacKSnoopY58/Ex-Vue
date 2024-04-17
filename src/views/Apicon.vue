@@ -18,7 +18,6 @@
                 </div>
 
                 <v-card-actions>
-                    <!-- <v-btn color="green" @click="addProduct(item, index)">Add Product</v-btn> -->
                 </v-card-actions>
             </v-col>
         </v-row>
@@ -31,9 +30,6 @@
                 <v-col cols="6">
 
                     <input type="file" ref="fileInput" @change="handleFileUpload">  
-
-                    <!-- <img :src="postdata.image" style="max-width: 100%; max-height: 200px;"> -->
-
                     <v-text-field name="Productname" label="Productname" id="Productname" v-model="postdata.Pname">
                     </v-text-field>
                     <v-text-field name="Productprice" label="Productprice" id="price" v-model="postdata.price">
@@ -58,7 +54,6 @@
             </v-card>
         </v-dialog>
 
-        <!-- <v-btn color="success" @click="getData2()">Call API</v-btn> -->
         <v-btn color="success" @click="newItem()">Create</v-btn>
     </div>
 </template>
@@ -72,7 +67,6 @@ export default {
             token: Cookies.get('token'),
             id: '',
             apidata: [],
-            // role: '',
             dialogedit: false,
             dialogDelete: false,
             postdata: {

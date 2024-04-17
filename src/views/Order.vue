@@ -1,148 +1,104 @@
 <template>
-    <div>
-        <h1>Apicon Employee</h1>
-
-        <v-row>
-            <v-col cols="3" v-for="(item, index) in apidata" :key="index">
-                <v-img :src="item.img" height="300" />
-                <v-img :src="'http://localhost:3000/images/' + item.Image" height="250" width="250"></v-img>
-                <v-card-title primary-title>
-                    {{ item.Pname }}
-                </v-card-title>
-                <!-- <div>
-                    <v-btn icon @click="decrementQuantity">
-                        <v-icon>mdi-minus</v-icon>
-                    </v-btn>
-                    <span>{{ quantity }}</span>
-                    <v-btn icon @click="incrementQuantity">
-                        <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                </div> -->
-
-                <v-card-actions>
-                    <!-- <v-btn color="green" @click="Addproduct(item)">Add Product</v-btn> -->
-
-                    <!-- <v-btn color="red" @click="deleteItem(item)">Delete</v-btn> -->
-                </v-card-actions>
-
-
-            </v-col>
-        </v-row>
-
-
-    </div>
+    <v-container>
+        <v-card>
+            <v-card-title>Order List</v-card-title>
+            <v-card-text>
+                <v-row>
+                    <v-col cols="12" md="4">
+                        <v-menu v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y
+                            min-width="290px">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="selectedDate" label="Select Date" prepend-icon="mdi-calendar"
+                                    readonly v-bind="attrs" v-on="on"></v-text-field>
+                            </template>
+                            <v-date-picker v-model="selectedDate" @input="menu = false"></v-date-picker>
+                        </v-menu>
+                    </v-col>
+                    <v-col cols="12" md="2">
+                        <v-btn @click="clearDate">Clear Date</v-btn>
+                    </v-col>
+                </v-row>
+                <v-data-table :headers="headers" :items="filteredOrders" class="elevation-1">
+                    <template v-slot:items="props">
+                        <td class="pl-4" :key="props.item._id">{{ props.item._id }}</td>
+                        <td :key="props.item._id + 'userId'">{{ props.item.userId }}</td>
+                        <td :key="props.item._id + 'total'">{{ props.item.total }}</td>
+                        <td :key="props.item._id + 'orderDate'">{{ props.item.orderDate }}</td>
+                    </template>
+                </v-data-table>
+            </v-card-text>
+            <v-card-actions>
+                <div v-if="selectedDate">Daily Total Sum: {{ dailyTotalSum(new Date(selectedDate)) }}</div>
+                <div v-else>All Total: {{ totalSum }}</div>
+            </v-card-actions>
+        </v-card>
+    </v-container>
 </template>
 
 <script>
 import Cookies from 'js-cookie';
+import { format } from 'date-fns';
 
 export default {
     data() {
         return {
             token: Cookies.get('token'),
-            id: '',
-            quantity: 1,
-            apidata: [],
-            // role: '',
-            dialogedit: false,
-            dialogDelete: false,
-            postdata: {
-                _id: '',
-                Pname: '',
-                price: '',
-                stock: '',
-                image: null
-            },
-            postdata2: {
-                Pname: '',
-                price: '',
-                stock: '',
-                image: null
-            },
+            orders: [],
+            selectedDate: null,
+            menu: false,
+            headers: [
+                { text: 'ID', value: '_id' },
+                { text: 'User ID', value: 'userId' },
+                { text: 'Total', value: 'total' },
+                { text: 'Date Time', value: 'orderDate' },
+            ],
         };
     },
-    computed: {
-        savemode() {
-            return this.id === '' ? 'NewItem' : 'Edit Item';
-        }
-    },
     created() {
-        this.getData();
+        this.fetchOrders();
     },
     methods: {
-        incrementQuantity() {
-            this.quantity++;
-        },
-        decrementQuantity() {
-            if (this.quantity > 1) {
-                this.quantity--;
-            }
-        },
-
-        getData() {
-            console.log(this.token)
+        fetchOrders() {
             this.axios.get('http://localhost:3000/api/v1/orders', {
                 headers: {
                     Authorization: `Bearer ${this.token}`
                 }
             })
                 .then(response => {
-                    this.apidata = response.data.data;
-                    console.log(this.apidata)
+                    this.orders = response.data.data.map(order => ({
+                        ...order,
+                    }));
                 })
                 .catch(error => {
-                    console.error('Error fetching data:', error);
+                    console.error('Error fetching orders:', error);
                 });
         },
-        async Addproduct(item) {
-            this.postdata = { ...item }; 
-            // console.log(this.quantity);
-            console.log(this.postdata);
-            try {
-                const response = await this.axios.post(
-                    'http://localhost:3000/api/v1/product/addcart',
-                    {
-                        productId: this.postdata._id,
-                        Amount: this.quantity
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${this.token}`
-                        }
-                    }
-                );
-
-                console.log(response.data);
-                this.getData();
-
-                this.postdata = { ...this.postdata2 };
-                this.dialogedit = false; 
-            } catch (error) {
-                console.error(error);
-            }
+        clearDate() {
+            this.selectedDate = null;
         },
-        closeItem(item) {
-            this.id = item._id;
-            this.postdata = { ...item };
-            this.dialogedit = false;
+        dailyTotalSum(date) {
+            const ordersOnDate = this.orders.filter(order => {
+                const orderDate = new Date(order.orderDate).toLocaleDateString();
+                return orderDate === date.toLocaleDateString();
+            });
+            return ordersOnDate.reduce((total, order) => total + order.total, 0);
         },
-
-        toggleName() {
-            this.$refs.fileInput.value = '';
-            this.postdata = { ...this.postdata2 };
-            this.dialogedit = !this.dialogedit;
+        formatDate(date) {
+            console.log(date);
+            return format(new Date(date), 'dd/MM/yyyy');
+        }
+    },
+    computed: {
+        totalSum() {
+            return this.orders.reduce((total, order) => total + order.total, 0);
         },
-
-        cancleDelete() {
-            this.dialogDelete = !this.dialogDelete;
-        },
-        saveSelect() {
-            if (this.id !== '') {
-                alert('update');
-            } else {
-                alert('new item');
-            }
+        filteredOrders() {
+            if (!this.selectedDate) return this.orders;
+            return this.orders.filter(order => {
+                const orderDate = new Date(order.orderDate).toLocaleDateString();
+                const selectedDate = new Date(this.selectedDate).toLocaleDateString();
+                return orderDate === selectedDate;
+            });
         }
     }
 }
